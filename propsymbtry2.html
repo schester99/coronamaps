@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>Coronavirus Testing in NYC by Zip Code</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        h3{
+            color: #000000;
+        }
+        h4{
+            color: #000000;
+        }
+         h5{
+            color: #000000;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Coronavirus in NYC Zip Codes</h1>
+    
+    </header>
+
+    <div id='map'></div>
+
+    <footer>
+        <p>Map authored by Sara Chester</p>
+        <p>This colorcoded map allows the user to turn off each proportional symbol layer. The layers each show the total coronavirus test that were administered, the total tests that came back positive, and the percent of the total tests that tested positive (reference key for details). </p>
+    </footer>
+
+    <script src="zipsroid.geojson"></script>
+    <script>
+
+      var map = L.map('map', {
+          center: [40.7128, -74.0060],
+          zoom: 10,
+      });
+        
+      
+      var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+          maxZoom: 19
+      });  
+     tiles.addTo(map);
+        var totalposlay= L.geoJson(zips, {
+          pointToLayer: function(feature,latlng) {
+              console.log(feature.properties)
+              return L.circleMarker(latlng, {
+                 color: 'yellow',
+                 weight: 1,
+                 fillColor: 'orange',
+                 fillOpacity: .5,
+                 radius: getRadius(feature.properties.totalpos)
+              });   
+          },
+        filter : function(feature, layer){
+              if(feature.properties.totalpos){
+                  return true
+              };
+            console.log(feature);
+        }, 
+         
+    onEachFeature : function(feature,layer) {
+    layer.on('mouseover', function() {
+    layer.setStyle({
+        fillColor: 'red'
+    });
+});
+layer.on('mouseout', function() {
+    layer.setStyle({
+        fillColor: 'orange'
+    });
+});
+
+          
+          var zip = feature.properties.ZIPCODE
+          var total = feature.properties.totalpos
+      
+                                                
+          
+          var popup = ("<b><h3>"+zip+"</b><br>"
+              +total+ " tested posotive" + "<br>")
+                       layer.bindPopup(popup)
+          }
+            
+      }).addTo(map);
+//step 4
+        function getRadius(area){
+        var radius = Math.sqrt(area/Math.PI);
+        return radius *.6 
+    }
+        var percposlay= L.geoJson(zips, {
+          pointToLayer: function(feature,latlng) {
+              console.log(feature.properties)
+              return L.circleMarker(latlng, {
+                 color: 'red',
+                 weight: 1,
+                 fillColor: 'orange',
+                 fillOpacity: .5,
+                 radius: getRadius(feature.properties.percpos)
+              });   
+          },
+        filter : function(feature, layer){
+              if(feature.properties.percpos){
+                  return true
+              };
+            console.log(feature);
+        }, 
+         
+    onEachFeature : function(feature,layer) {
+    layer.on('mouseover', function() {
+    layer.setStyle({
+        fillColor: 'red'
+    });
+});
+layer.on('mouseout', function() {
+    layer.setStyle({
+        fillColor: 'orange'
+    });
+});
+
+          
+          var zip = feature.properties.ZIPCODE
+          var perc = feature.properties.percpos
+      
+                                                
+          
+          var popup = ("<b><h3>"+zip+"</b><br>"
+              +perc+ "% tested positive" + "<br>")
+                       layer.bindPopup(popup)
+          }
+            
+      }).addTo(map);
+//step 4
+        function getRadius(area){
+        var radius = Math.sqrt(area/Math.PI);
+        return radius *.9
+    }
+        var totallay = L.geoJson(zips, {
+          pointToLayer: function(feature,latlng) {
+              console.log(feature.properties.totaltests)
+              return L.circleMarker(latlng, {
+                 color: 'RoyalBlue',
+                 weight: 2,
+                 fillColor: 'MediumBlue',
+                 fillOpacity: .5,
+                 radius: getRadius(feature.properties.totaltests) //step4
+              });   
+          },
+          
+      filter : function(feature, layer){
+              if(feature.properties.totaltests){
+                  return feature
+              };
+             // console.log(feature);
+          },
+         
+    //step 5
+    onEachFeature : function(feature,layer) {
+    layer.on('mouseover', function() {
+    layer.setStyle({
+        fillColor: 'MidnightBlue'
+    });
+});
+layer.on('mouseout', function() {
+    layer.setStyle({
+        fillColor: 'MediumBlue'
+    });
+});
+
+ var zip = feature.properties.ZIPCODE
+          var totals = feature.properties.totaltests
+      
+                                                
+          
+          var popup = ("<b><h3>"+zip+"</b><br>"
+              +totals+ " total tests" + "<br>")
+                       layer.bindPopup(popup)
+          }
+          
+      }).addTo(map);
+//step 4
+        function getRadius(area){
+        var radius = Math.sqrt(area/Math.PI);
+        return radius *.6   
+    }; 
+
+
+var sourcesLayers = {    "<b style='color:#DC143C'>Percent Positive</b>": percposlay,    "<b style='color:#FFD700'>Total Positive</b>": totalposlay,    "<b style='color:#4169E1'>Total Tests</b>": totallay}
+          
+
+
+L.control.layers(null, sourcesLayers, { collapsed:false }).addTo(map);
+            
+          
+    </script>
+    
+</body>
+
+</html>

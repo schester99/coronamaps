@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['bar']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Zip Code', 'Total Coronavirus Tests', 'Total Positive Tests'],
+          ['10314', 5491, 2284],
+          ['10467', 5235, 2723],
+          ['11368', 5156, 3417],
+          ['10469', 4568, 2406],
+          ['11219', 4364, 2257] 
+        ]);
+
+        var options = {
+          chart: {
+            title: 'NYC Zip Codes with Highest Numbers of Coronavirus Tests',
+            subtitle: 'Zip Codes, Total Test Administered, and Total Positive Tests',
+          },
+          bars: 'horizontal' // Required for Material Bar Charts.
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('barchart_material'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
+    </script>
+  </head>
+  <body>
+    <div id="barchart_material" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>
